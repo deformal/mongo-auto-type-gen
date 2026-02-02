@@ -8,6 +8,8 @@ import (
 	"github.com/deformal/mongo-auto-type-gen/internals/config"
 	"github.com/deformal/mongo-auto-type-gen/internals/infer"
 	"github.com/deformal/mongo-auto-type-gen/internals/mongo"
+	"github.com/deformal/mongo-auto-type-gen/internals/render"
+	"github.com/deformal/mongo-auto-type-gen/pkg"
 	"github.com/spf13/cobra"
 )
 
@@ -87,6 +89,11 @@ var rootCmd = &cobra.Command{
 					return err
 				}
 
+				if len(docs) <= 0 {
+					fmt.Printf("%s.%s -> sampled %d docs ( SKIPPING )\n", dbName, colName, len(docs))
+					continue
+				}
+
 				schema := map[string]*infer.FieldStats{}
 				totalDocs := 0
 
@@ -94,19 +101,18 @@ var rootCmd = &cobra.Command{
 					infer.Flatten(doc, schema, &totalDocs)
 				}
 
-				fmt.Printf("Schema for %s.%s\n", dbName, colName)
+				tree := infer.BuildSchemaTree(schema)
 
-				for path, fs := range schema {
-					fmt.Printf(
-						"  %s -> count=%d types=%v arrayTypes=%v\n",
-						path, fs.Count, fs.Types, fs.ArrayTypes,
-					)
-				}
+				ts := render.RenderTypeScript(tree, totalDocs, render.TSOptions{
+					RequiredThreshold: opts.OptionalThreshold,
+					DateAs:            opts.DateAs,
+					ObjectIDAs:        opts.ObjectIDAs,
+					NullPolicy:        "optional",
+					UseInterface:      false,
+					RootTypeName:      pkg.TypeNameFromCollection(colName),
+				})
 
-				if len(docs) <= 0 {
-					fmt.Printf("%s.%s -> sampled %d docs ( SKIPPING )\n", dbName, colName, len(docs))
-					continue
-				}
+				fmt.Println(ts)
 
 			}
 		}
