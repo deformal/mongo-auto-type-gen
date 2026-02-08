@@ -82,6 +82,14 @@ var rootCmd = &cobra.Command{
 				return err
 			}
 
+			composer := render.NewFileComposer(render.TSOptions{
+				RequiredThreshold: opts.OptionalThreshold,
+				DateAs:            opts.DateAs,
+				ObjectIDAs:        opts.ObjectIDAs,
+				NullPolicy:        "optional",
+				UseInterface:      false,
+			})
+
 			for _, colName := range cols {
 				coll := db.Collection(colName)
 				docs, err := mongo.SampleDocuments(ctx, coll, opts.Sample)
@@ -103,18 +111,9 @@ var rootCmd = &cobra.Command{
 
 				tree := infer.BuildSchemaTree(schema)
 
-				ts := render.RenderTypeScript(tree, totalDocs, render.TSOptions{
-					RequiredThreshold: opts.OptionalThreshold,
-					DateAs:            opts.DateAs,
-					ObjectIDAs:        opts.ObjectIDAs,
-					NullPolicy:        "optional",
-					UseInterface:      false,
-					RootTypeName:      pkg.TypeNameFromCollection(colName),
-				})
-
-				fmt.Println(ts)
-
+				composer.AddCollection(tree, totalDocs, pkg.TypeNameFromCollection(colName))
 			}
+			fmt.Println(composer.String())
 		}
 		return nil
 	},
