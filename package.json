@@ -1,0 +1,24 @@
+{
+  "name": "mongo-auto-type-gen",
+  "version": "0.1.1",
+  "description": "Generate TypeScript types from MongoDB collections by inference",
+  "license": "ISC",
+  "bin": {
+    "mongots": "bin/mongots.js"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "core:dev": "go run ./core/cmd/main.go --env-file .env --out ./generated",
+    "build:go": "go build -o dist/mongots ./core/cmd/main.go",
+    "build:bins": "bash scripts/build-binaries.sh",
+    "build": "npm run build:go",
+    "release": "bash scripts/release.sh"
+  },
+  "keywords": [],
+  "author": ""
+}
