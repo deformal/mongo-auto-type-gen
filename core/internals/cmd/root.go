@@ -141,6 +141,14 @@ var rootCmd = &cobra.Command{
 
 			if len(dbs) > 1 {
 				outPath = filepath.Join(opts.Out, dbName+".ts")
+			} else {
+				if strings.HasSuffix(outPath, string(os.PathSeparator)) {
+					outPath = filepath.Join(outPath, dbName+".ts")
+				} else if info, err := os.Stat(outPath); err == nil && info.IsDir() {
+					outPath = filepath.Join(outPath, dbName+".ts")
+				} else if filepath.Ext(outPath) == "" {
+					outPath = outPath + ".ts"
+				}
 			}
 
 			if err := render.WriteFile(outPath, out); err != nil {
