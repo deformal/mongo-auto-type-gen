@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 
@@ -66,9 +65,6 @@ func ReadEnv() EnvOptions {
 		DateAs:            get("MONGOTS_DATE_AS"),
 		ObjectIDAs:        get("MONGOTS_OBJECTID_AS"),
 	}
-
-	fmt.Println("Env Options")
-	fmt.Println(envOptions)
 
 	return envOptions
 }

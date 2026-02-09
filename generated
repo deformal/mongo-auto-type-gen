@@ -1,0 +1,221 @@
+export type ISODateString = string;
+
+export type Cashbackprograms = {
+  __v: number;
+  _id: string;
+  cashback_percentage: number;
+  created_at: ISODateString;
+  end_date: ISODateString;
+  entities: (number)[];
+  name: string;
+  ref_id: number;
+  start_date: ISODateString;
+  target_amount: number;
+  updated_at: ISODateString;
+};
+
+export type Entities = {
+  __v?: number;
+  _id: string;
+  balance_id: string;
+  branches: Branches[];
+  createdAt: ISODateString;
+  customer_ref_ids: (number)[];
+  is_active: boolean;
+  is_blocked: boolean;
+  name?: string;
+  ref_id: number;
+  updatedAt: ISODateString;
+};
+
+export type Branches = {
+  customer_ref_ids?: (number)[];
+  id?: string;
+  is_active?: boolean;
+  ref_id?: number;
+};
+
+export type Balances = {
+  _id: string;
+  createdAt: ISODateString;
+  credit_notes: (unknown)[];
+  entity_id: string;
+  updatedAt: ISODateString;
+};
+
+export type Paymentterms = {
+  _id: string;
+  cycle_type: string;
+  down_payment_percentage: number;
+  fee_percentage: number;
+  is_active: boolean;
+  name: string;
+  number_of_days: number;
+  ref_id: number;
+};
+
+export type Shipmentcancellationreasons = {
+  _id: string;
+  arabic_text: string;
+  ref_id: number;
+  text: string;
+};
+
+export type Unifiedfeedbackschemas = {
+  __v: number;
+  _id: string;
+  comment: string;
+  created_at: ISODateString;
+  customer_id: string;
+  feedback_type: string;
+  order_id: string;
+  order_ref_id: number;
+  rating: number;
+  updated_at: ISODateString;
+};
+
+export type Orders = {
+  _id: string;
+  added_tax_amount_after_terms: number;
+  createdAt: ISODateString;
+  delivery_fees: number;
+  expected_final_delivery_date: ISODateString;
+  expected_initial_delivery_date: ISODateString;
+  invoices: Invoices[];
+  merge_shipments: boolean;
+  order_entity: OrderEntity;
+  order_note: string;
+  order_payment_term: OrderPaymentTerm;
+  order_products_after_terms_total_discount: number;
+  order_sub_total_after_terms: number;
+  order_total_after_discount_after_promo_after_tax_after_delivery_fees_after_credit_balance_deduction: number;
+  order_total_after_terms_after_discount_after_promo_after_tax_after_delivery_fees: number;
+  order_total_tax_after_terms: number;
+  payment_method: PaymentMethod;
+  ref_id: number;
+  sale_order_number: string;
+  shipment_ids: (string)[];
+  shipments: Shipments[];
+  shipping_method_ref_id: number;
+  status: string;
+  updatedAt: ISODateString;
+  use_credit_balance: boolean;
+  use_payment_term: boolean;
+};
+
+export type Invoices = {
+  _id: string;
+  delivery_charge: number;
+  due_date: string;
+  finalised_date: string;
+  invoice_lines: InvoicesInvoiceLines[];
+  invoice_number: string;
+  invoice_url: string;
+  order_ref_id: number;
+  paid_amount: number;
+  ref_id: number;
+  service_charge: number;
+  status: string;
+  total_amount: number;
+  total_discount: number;
+};
+
+export type Shipments = {
+  _id: string;
+  actual_final_delivery_date: ISODateString;
+  added_tax_amount_after_terms: number;
+  discount_percentage: number;
+  order_id: string;
+  original_price_after_terms_fee: number;
+  price_after_terms_after_discount: number;
+  price_after_terms_after_discount_after_tax: number;
+  rating: number;
+  ref_id: number;
+  shipment_delivery_date: ISODateString;
+  shipment_lines: ShipmentsShipmentLines[];
+  shipment_number: string;
+  shipment_original_delivery_date: ISODateString;
+  status: string;
+};
+
+export type OrderEntity = {
+  branch_id: string;
+  branch_ref_id: number;
+  id: string;
+  ref_id: number;
+};
+
+export type PaymentMethod = {
+  fee: number;
+  type: string;
+};
+
+export type OrderPaymentTerm = {
+  cycle_type: string;
+  fee_percentage: number;
+  name: string;
+  number_of_days: number;
+  ref_id: number;
+};
+
+export type InvoicesInvoiceLines = {
+  product: InvoicesInvoiceLinesProduct;
+  quantity: number;
+  sub_total: number;
+  tax_amount: number;
+  tax_percentage: number;
+  total: number;
+  unit_price: number;
+};
+
+export type ShipmentsShipmentLines = {
+  _id: string;
+  add_tax_amount_after_terms_fee: number;
+  added_tax_amount_after_terms: number;
+  adjusted_discount_percentage: number;
+  adjusted_original_price: number;
+  adjusted_price_after_discount: number;
+  adjusted_price_after_discount_after_tax: number;
+  backorder_quantity: number;
+  discount_percentage: number;
+  original_price: number;
+  original_price_after_discount: number;
+  original_price_after_terms_fee: number;
+  price_after_discount_after_tax: number;
+  price_after_terms_after_discount: number;
+  price_after_terms_after_discount_after_tax: number;
+  product: ShipmentsShipmentLinesProduct;
+  promotions_applied_data?: unknown;
+  quantity_delivered: number;
+  quantity_ordered: number;
+  ref_id: number;
+};
+
+export type InvoicesInvoiceLinesProduct = {
+  arabic_name: string;
+  category_image_url: string;
+  category_name: string;
+  category_ref_id: number;
+  image_url: string;
+  name: string;
+  original_price: number;
+  product_class_ref_id: number;
+  product_ref_id: number;
+  product_weight_in_kg: number;
+  sub_category_image_url: string;
+  sub_category_name: string;
+  sub_category_ref_id: number;
+  tax_percentage: number;
+  unit: string;
+};
+
+export type ShipmentsShipmentLinesProduct = {
+  arabic_name: string;
+  image_url: string;
+  name: string;
+  original_price: number;
+  product_id: string;
+  product_ref_id: number;
+  tax_percentage: number;
+  unit: string;
+};

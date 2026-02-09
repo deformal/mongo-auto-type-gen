@@ -21,6 +21,7 @@ func (f *FileComposer) AddCollection(tree *infer.SchemaNode, totalDocs int, root
 	opt.RootTypeName = rootTypeName
 	block := RenderTypeScript(tree, totalDocs, opt)
 	block = strings.TrimSpace(block)
+	block = strings.TrimSpace(stripSharedAliases(block))
 	if block != "" {
 		f.blocks = append(f.blocks, block)
 	}
@@ -48,4 +49,12 @@ func (f *FileComposer) String() string {
 		return ""
 	}
 	return out + "\n"
+}
+
+func stripSharedAliases(s string) string {
+	s = strings.ReplaceAll(s, "export type ISODateString = string;\n\n", "")
+	s = strings.ReplaceAll(s, "export type ISODateString = string;\n", "")
+	s = strings.ReplaceAll(s, "export type ObjectId = string;\n\n", "")
+	s = strings.ReplaceAll(s, "export type ObjectId = string;\n", "")
+	return s
 }

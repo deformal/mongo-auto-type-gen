@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
+	"strings"
 
 	"github.com/deformal/mongo-auto-type-gen/internals/config"
 	"github.com/deformal/mongo-auto-type-gen/internals/infer"
@@ -30,8 +32,6 @@ var rootCmd = &cobra.Command{
 	Use:   "mongots",
 	Short: "Generate TypeScript types from MongoDB collections by inference",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Println("Config")
-		fmt.Println("Sample", opts.Sample)
 		if err := config.LoadDotEnv(opts.EnvFile); err != nil {
 			return err
 		}
@@ -41,18 +41,23 @@ var rootCmd = &cobra.Command{
 		if opts.URI == "" {
 			opts.URI = env.MongoURI
 		}
+
 		if opts.Out == "" {
 			opts.Out = env.Out
 		}
+
 		if opts.Sample == 200 && env.Sample != 200 {
 			opts.Sample = env.Sample
 		}
+
 		if opts.OptionalThreshold == 0.98 && env.OptionalThreshold != 0.98 {
 			opts.OptionalThreshold = env.OptionalThreshold
 		}
+
 		if opts.DateAs == "string" && env.DateAs != "" {
 			opts.DateAs = env.DateAs
 		}
+
 		if opts.ObjectIDAs == "string" && env.ObjectIDAs != "" {
 			opts.ObjectIDAs = env.ObjectIDAs
 		}
@@ -60,16 +65,23 @@ var rootCmd = &cobra.Command{
 		ctx := context.Background()
 
 		client, err := mongo.Connect(ctx, opts.URI)
+
 		if err != nil {
 			return err
 		}
+
 		defer client.Disconnect(ctx)
 
 		dbs, err := mongo.ListDatabases(ctx, client)
+
 		if err != nil {
 			fmt.Println("Mongo connection error while listing db's")
 			fmt.Println(err)
 			return err
+		}
+
+		if strings.TrimSpace(opts.Out) == "" {
+			return fmt.Errorf("--out flag is required")
 		}
 
 		for _, dbName := range dbs {
@@ -92,7 +104,9 @@ var rootCmd = &cobra.Command{
 
 			for _, colName := range cols {
 				coll := db.Collection(colName)
+
 				docs, err := mongo.SampleDocuments(ctx, coll, opts.Sample)
+
 				if err != nil {
 					return err
 				}
@@ -103,6 +117,7 @@ var rootCmd = &cobra.Command{
 				}
 
 				schema := map[string]*infer.FieldStats{}
+
 				totalDocs := 0
 
 				for _, doc := range docs {
@@ -113,7 +128,26 @@ var rootCmd = &cobra.Command{
 
 				composer.AddCollection(tree, totalDocs, pkg.TypeNameFromCollection(colName))
 			}
+
 			fmt.Println(composer.String())
+
+			out := composer.String()
+
+			if strings.TrimSpace(out) == "" {
+				continue
+			}
+
+			outPath := opts.Out
+
+			if len(dbs) > 1 {
+				outPath = filepath.Join(opts.Out, dbName+".ts")
+			}
+
+			if err := render.WriteFile(outPath, out); err != nil {
+				return err
+			}
+
+			fmt.Printf("wrote %s\n", outPath)
 		}
 		return nil
 	},
