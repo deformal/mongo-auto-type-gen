@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/deformal/mongo-auto-type-gen/internals/infer"
+	"github.com/deformal/mongo-auto-type-gen/core/internals/infer"
 )
 
 type TSOptions struct {

@@ -7,11 +7,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/deformal/mongo-auto-type-gen/internals/config"
-	"github.com/deformal/mongo-auto-type-gen/internals/infer"
-	"github.com/deformal/mongo-auto-type-gen/internals/mongo"
-	"github.com/deformal/mongo-auto-type-gen/internals/render"
-	"github.com/deformal/mongo-auto-type-gen/pkg"
+	"github.com/deformal/mongo-auto-type-gen/core/internals/config"
+	"github.com/deformal/mongo-auto-type-gen/core/internals/infer"
+	"github.com/deformal/mongo-auto-type-gen/core/internals/mongo"
+	"github.com/deformal/mongo-auto-type-gen/core/internals/render"
+	"github.com/deformal/mongo-auto-type-gen/core/pkg"
 	"github.com/spf13/cobra"
 )
 
