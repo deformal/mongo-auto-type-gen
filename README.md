@@ -1,13 +1,30 @@
 # mongo-auto-type-gen
 This is a usefull tool, that introspects your mongo collections and uses samples from them to generate types/interfaces/classes from them.
 
-## Release
-This repo publishes a single npm package that bundles prebuilt binaries for all platforms.
+## Usage
+Generate TypeScript types from MongoDB collections by inference.
 
-Release steps:
-1. Update `package.json` version.
-2. Tag and push, for example `v0.1.0`.
-3. GitHub Actions builds binaries and runs `npm publish`.
+### Command
+`mongots`
 
-Required secret:
-- `NPM_TOKEN` with publish rights.
+### Examples
+- `mongots --uri mongodb://localhost:27017 --out ./generated`
+- `mongots --env-file .env --out ./generated`
+
+### Flags
+- `--uri <string>` MongoDB connection URI
+- `--out <path>` Output TypeScript file path (required)
+- `--sample <int>` Sample size per collection (default: 2)
+- `--optional-threshold <float>` Field required threshold (default: 0.98)
+- `--date-as <string>` `string|Date` (default: `string`)
+- `--objectid-as <string>` `string|ObjectId` (default: `string`)
+- `--config <path>` Optional config path (yaml/json)
+- `--env-file <path>` Path to .env file (optional)
+
+### Environment variables
+- `MONGOTS_MONGO_URI` or `MONGO_URI`
+- `MONGOTS_OUT`
+- `MONGOTS_SAMPLE`
+- `MONGOTS_OPTIONAL_THRESHOLD`
+- `MONGOTS_DATE_AS`
+- `MONGOTS_OBJECTID_AS`
