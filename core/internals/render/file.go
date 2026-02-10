@@ -11,7 +11,7 @@ type FileComposer struct {
 	wroteHdr      bool
 	blocks        []string
 	rootTypeNames map[string]bool
-	allTypeNames  map[string]bool // Track ALL type names (root + embedded) to prevent duplicates
+	allTypeNames  map[string]bool
 }
 
 func NewFileComposer(opt TSOptions) *FileComposer {
@@ -27,7 +27,7 @@ func (f *FileComposer) AddCollection(tree *infer.SchemaNode, totalDocs int, root
 
 	opt := f.opt
 	opt.RootTypeName = rootTypeName
-	opt.AllUsedTypeNames = f.allTypeNames // Pass all used type names (root + embedded)
+	opt.AllUsedTypeNames = f.allTypeNames
 	block := RenderTypeScript(tree, totalDocs, opt)
 	block = strings.TrimSpace(block)
 	block = strings.TrimSpace(stripSharedAliases(block))

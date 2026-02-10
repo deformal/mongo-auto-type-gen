@@ -15,7 +15,7 @@ type TSOptions struct {
 	NullPolicy        string
 	UseInterface      bool
 	RootTypeName      string
-	AllUsedTypeNames  map[string]bool // All type names used across all collections (root + embedded)
+	AllUsedTypeNames  map[string]bool
 }
 
 func RenderTypeScript(root *infer.SchemaNode, totalDocs int, opt TSOptions) string {
@@ -39,7 +39,6 @@ func RenderTypeScript(root *infer.SchemaNode, totalDocs int, opt TSOptions) stri
 	typeNames := map[string]string{}
 	typeNames[""] = opt.RootTypeName
 
-	// Mark root type name as used
 	if opt.AllUsedTypeNames != nil {
 		opt.AllUsedTypeNames[opt.RootTypeName] = true
 	}
@@ -47,14 +46,12 @@ func RenderTypeScript(root *infer.SchemaNode, totalDocs int, opt TSOptions) stri
 	for _, n := range objectNodes {
 		typeName := pascalFromPath(n.Path)
 
-		// If this type name is already used, prefix it with the root collection name
 		if opt.AllUsedTypeNames != nil && opt.AllUsedTypeNames[typeName] {
 			typeName = opt.RootTypeName + typeName
 		}
 
 		typeNames[n.Path] = typeName
 
-		// Mark this type name as used for future collections
 		if opt.AllUsedTypeNames != nil {
 			opt.AllUsedTypeNames[typeName] = true
 		}
@@ -191,7 +188,7 @@ func tsTypeForNode(n *infer.SchemaNode, opt TSOptions, typeNames map[string]stri
 		if elemUnion == "" {
 			elemUnion = "unknown"
 		}
-		// Only wrap in parentheses if it's a union type (contains |)
+
 		if strings.Contains(elemUnion, "|") {
 			return fmt.Sprintf("(%s)[]", elemUnion)
 		}
@@ -269,8 +266,6 @@ func tsUnionFromKinds(m map[infer.Kind]int, opt TSOptions) string {
 	return strings.Join(parts, " | ")
 }
 
-// deduplicateStringAliases removes redundant base string types from unions when semantic aliases exist.
-// For example: "ISODateString | string" becomes "ISODateString" to preserve semantic meaning
 func deduplicateStringAliases(parts []string) []string {
 	hasString := false
 	hasISODateString := false
@@ -287,11 +282,9 @@ func deduplicateStringAliases(parts []string) []string {
 		}
 	}
 
-	// If we have semantic type aliases along with base "string", prefer the semantic types
 	if hasString && (hasISODateString || hasObjectId) {
 		result := make([]string, 0, len(parts))
 		for _, p := range parts {
-			// Skip base "string" when we have semantic aliases
 			if p == "string" {
 				continue
 			}
