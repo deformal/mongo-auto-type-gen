@@ -34,3 +34,7 @@ Generate TypeScript types from MongoDB collections by inference.
 - `MONGOTS_OPTIONAL_THRESHOLD`
 - `MONGOTS_DATE_AS`
 - `MONGOTS_OBJECTID_AS`
+
+### Made with devs in mind
+
+[saurabhjainwal](https://saurabhjainwal.dev)
