@@ -1,17 +1,22 @@
 # mongo-auto-type-gen
+
 This is a usefull tool, that introspects your mongo collections and uses samples from them to generate types/interfaces/classes from them.
 
 ## Usage
+
 Generate TypeScript types from MongoDB collections by inference.
 
 ### Command
+
 `mongots`
 
 ### Examples
+
 - `mongots --uri mongodb://localhost:27017 --out ./generated`
 - `mongots --env-file .env --out ./generated`
 
 ### Flags
+
 - `--uri <string>` MongoDB connection URI
 - `--out <path>` Output TypeScript file path (required)
 - `--sample <int>` Sample size per collection (default: 2)
@@ -22,6 +27,7 @@ Generate TypeScript types from MongoDB collections by inference.
 - `--env-file <path>` Path to .env file (optional)
 
 ### Environment variables
+
 - `MONGOTS_MONGO_URI` or `MONGO_URI`
 - `MONGOTS_OUT`
 - `MONGOTS_SAMPLE`
