@@ -15,6 +15,7 @@ type TSOptions struct {
 	NullPolicy        string
 	UseInterface      bool
 	RootTypeName      string
+	AllRootTypeNames  map[string]bool
 }
 
 func RenderTypeScript(root *infer.SchemaNode, totalDocs int, opt TSOptions) string {
@@ -38,7 +39,13 @@ func RenderTypeScript(root *infer.SchemaNode, totalDocs int, opt TSOptions) stri
 	typeNames := map[string]string{}
 	typeNames[""] = opt.RootTypeName
 	for _, n := range objectNodes {
-		typeNames[n.Path] = pascalFromPath(n.Path)
+		typeName := pascalFromPath(n.Path)
+
+		if opt.AllRootTypeNames != nil && opt.AllRootTypeNames[typeName] && typeName != opt.RootTypeName {
+			typeName = opt.RootTypeName + typeName
+		}
+
+		typeNames[n.Path] = typeName
 	}
 
 	var b strings.Builder
@@ -66,7 +73,6 @@ func RenderTypeScript(root *infer.SchemaNode, totalDocs int, opt TSOptions) stri
 }
 
 func collectObjectNodes(n *infer.SchemaNode, out *[]*infer.SchemaNode) {
-	// Skip root, but include other object nodes
 	if n.Path != "" && n.Kind == infer.NodeObject {
 		*out = append(*out, n)
 	}
@@ -173,7 +179,11 @@ func tsTypeForNode(n *infer.SchemaNode, opt TSOptions, typeNames map[string]stri
 		if elemUnion == "" {
 			elemUnion = "unknown"
 		}
-		return fmt.Sprintf("(%s)[]", elemUnion)
+		// Only wrap in parentheses if it's a union type (contains |)
+		if strings.Contains(elemUnion, "|") {
+			return fmt.Sprintf("(%s)[]", elemUnion)
+		}
+		return fmt.Sprintf("%s[]", elemUnion)
 
 	case infer.NodePrimitive:
 		u := tsUnionFromKinds(n.Types, opt)
@@ -243,7 +253,42 @@ func tsUnionFromKinds(m map[infer.Kind]int, opt TSOptions) string {
 
 	sort.Strings(parts)
 	parts = unique(parts)
+	parts = deduplicateStringAliases(parts)
 	return strings.Join(parts, " | ")
+}
+
+// deduplicateStringAliases removes redundant base string types from unions when semantic aliases exist.
+// For example: "ISODateString | string" becomes "ISODateString" to preserve semantic meaning
+func deduplicateStringAliases(parts []string) []string {
+	hasString := false
+	hasISODateString := false
+	hasObjectId := false
+
+	for _, p := range parts {
+		switch p {
+		case "string":
+			hasString = true
+		case "ISODateString":
+			hasISODateString = true
+		case "ObjectId":
+			hasObjectId = true
+		}
+	}
+
+	// If we have semantic type aliases along with base "string", prefer the semantic types
+	if hasString && (hasISODateString || hasObjectId) {
+		result := make([]string, 0, len(parts))
+		for _, p := range parts {
+			// Skip base "string" when we have semantic aliases
+			if p == "string" {
+				continue
+			}
+			result = append(result, p)
+		}
+		return result
+	}
+
+	return parts
 }
 
 func stripNullFromUnion(u string) string {
