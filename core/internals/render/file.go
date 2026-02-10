@@ -11,22 +11,23 @@ type FileComposer struct {
 	wroteHdr      bool
 	blocks        []string
 	rootTypeNames map[string]bool
+	allTypeNames  map[string]bool // Track ALL type names (root + embedded) to prevent duplicates
 }
 
 func NewFileComposer(opt TSOptions) *FileComposer {
 	return &FileComposer{
 		opt:           opt,
 		rootTypeNames: make(map[string]bool),
+		allTypeNames:  make(map[string]bool),
 	}
 }
 
 func (f *FileComposer) AddCollection(tree *infer.SchemaNode, totalDocs int, rootTypeName string) {
-
 	f.rootTypeNames[rootTypeName] = true
 
 	opt := f.opt
 	opt.RootTypeName = rootTypeName
-	opt.AllRootTypeNames = f.rootTypeNames
+	opt.AllUsedTypeNames = f.allTypeNames // Pass all used type names (root + embedded)
 	block := RenderTypeScript(tree, totalDocs, opt)
 	block = strings.TrimSpace(block)
 	block = strings.TrimSpace(stripSharedAliases(block))

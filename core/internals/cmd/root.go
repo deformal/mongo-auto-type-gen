@@ -46,7 +46,7 @@ var rootCmd = &cobra.Command{
 			opts.Out = env.Out
 		}
 
-		if opts.Sample == 200 && env.Sample != 200 {
+		if opts.Sample == 15 && env.Sample != 15 {
 			opts.Sample = env.Sample
 		}
 
@@ -171,7 +171,7 @@ func Execute() {
 func init() {
 	rootCmd.Flags().StringVar(&opts.URI, "uri", "", "MongoDB connection URI")
 	rootCmd.Flags().StringVar(&opts.Out, "out", "", "Output TypeScript file path")
-	rootCmd.Flags().IntVar(&opts.Sample, "sample", 2, "Sample size per collection")
+	rootCmd.Flags().IntVar(&opts.Sample, "sample", 15, "Sample size per collection")
 	rootCmd.Flags().Float64Var(&opts.OptionalThreshold, "optional-threshold", 0.98, "Field required threshold based on samples")
 	rootCmd.Flags().StringVar(&opts.DateAs, "date-as", "string", "How to emit dates: string|Date")
 	rootCmd.Flags().StringVar(&opts.ObjectIDAs, "objectid-as", "string", "How to emit ObjectIds: string|ObjectId")

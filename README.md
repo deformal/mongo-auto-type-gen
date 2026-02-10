@@ -19,7 +19,7 @@ Generate TypeScript types from MongoDB collections by inference.
 
 - `--uri <string>` MongoDB connection URI
 - `--out <path>` Output TypeScript file path (required)
-- `--sample <int>` Sample size per collection (default: 2)
+- `--sample <int>` Sample size per collection (default: 15)
 - `--optional-threshold <float>` Field required threshold (default: 0.98)
 - `--date-as <string>` `string|Date` (default: `string`)
 - `--objectid-as <string>` `string|ObjectId` (default: `string`)

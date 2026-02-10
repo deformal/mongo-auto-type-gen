@@ -27,7 +27,13 @@ func SampleDocuments(ctx context.Context, coll *mongo.Collection, n int) ([]bson
 }
 
 func FindFirstN(ctx context.Context, coll *mongo.Collection, n int) ([]bson.M, error) {
-	cur, err := coll.Find(ctx, bson.M{}, &options.FindOptions{Limit: ptrInt64(int64(n))})
+	// Sort by _id descending to get the latest documents
+	findOpts := &options.FindOptions{
+		Limit: ptrInt64(int64(n)),
+		Sort:  bson.D{{Key: "_id", Value: -1}}, // -1 for descending (latest first)
+	}
+
+	cur, err := coll.Find(ctx, bson.M{}, findOpts)
 	if err != nil {
 		return nil, err
 	}

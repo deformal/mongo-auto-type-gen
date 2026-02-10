@@ -15,7 +15,7 @@ type TSOptions struct {
 	NullPolicy        string
 	UseInterface      bool
 	RootTypeName      string
-	AllRootTypeNames  map[string]bool
+	AllUsedTypeNames  map[string]bool // All type names used across all collections (root + embedded)
 }
 
 func RenderTypeScript(root *infer.SchemaNode, totalDocs int, opt TSOptions) string {
@@ -38,14 +38,26 @@ func RenderTypeScript(root *infer.SchemaNode, totalDocs int, opt TSOptions) stri
 
 	typeNames := map[string]string{}
 	typeNames[""] = opt.RootTypeName
+
+	// Mark root type name as used
+	if opt.AllUsedTypeNames != nil {
+		opt.AllUsedTypeNames[opt.RootTypeName] = true
+	}
+
 	for _, n := range objectNodes {
 		typeName := pascalFromPath(n.Path)
 
-		if opt.AllRootTypeNames != nil && opt.AllRootTypeNames[typeName] && typeName != opt.RootTypeName {
+		// If this type name is already used, prefix it with the root collection name
+		if opt.AllUsedTypeNames != nil && opt.AllUsedTypeNames[typeName] {
 			typeName = opt.RootTypeName + typeName
 		}
 
 		typeNames[n.Path] = typeName
+
+		// Mark this type name as used for future collections
+		if opt.AllUsedTypeNames != nil {
+			opt.AllUsedTypeNames[typeName] = true
+		}
 	}
 
 	var b strings.Builder
